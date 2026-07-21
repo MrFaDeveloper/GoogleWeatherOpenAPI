@@ -1,0 +1,9 @@
+# Use this workspace to collaborate
+workspace:
+  id: fc86371e-9804-4572-8ae8-829aa88fafd1
+
+localResources:
+  collections:
+    - ../Pixel_Weather_API.postman_collection.json
+  environments:
+    - ../Pixel_Weather_API.postman_environment.json

@@ -1,0 +1,1455 @@
+openapi: 3.0.3
+info:
+  title: Pixel Weather Hub API (reverse engineered)
+  version: 1.1.20260413.940319463.release
+  description: gRPC surface of `pixelweatherhub-pa.googleapis.com` used by `com.google.android.apps.weather` version 1.1.20260413.940319463.release (versionCode 10009163). Transport is gRPC over HTTP/2 with protobuf bodies (not JSON REST). Field names are reconstructed from decompiled protobuf schemas and proven live traffic. See repository README and docs/auth.md.
+  contact:
+    name: pixel-weather-api-reverse
+servers:
+  -
+    url: "https://pixelweatherhub-pa.googleapis.com"
+    description: Production
+  -
+    url: "https://staging-pixelweatherhub-pa.sandbox.googleapis.com"
+    description: Staging
+tags:
+  -
+    name: location
+  -
+    name: forecast
+  -
+    name: air-quality
+  -
+    name: pollen
+  -
+    name: maps
+  -
+    name: blocks
+  -
+    name: imagery
+  -
+    name: preferences
+paths:
+  /google.internal.android.pixel.weatherhub.v1.LocationMetadataService/GetLocationTimeZone:
+    post:
+      summary: GetLocationTimeZone
+      description: |
+        Resolve IANA timezone for coordinates. Proven: 37.422,-122.084 → America/Los_Angeles.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - location
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetLocationTimeZoneRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetLocationTimeZoneResponse"
+  /google.internal.android.pixel.weatherhub.v1.LocationMetadataService/GetLocationName:
+    post:
+      summary: GetLocationName
+      description: |
+        Reverse-geocode coordinates to place name and place id.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - location
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetLocationNameRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetLocationNameResponse"
+  /google.internal.android.pixel.weatherhub.v1.LocationMetadataService/GetGeoAttributes:
+    post:
+      summary: GetGeoAttributes
+      description: |
+        Geo attributes for a location (registered on service; same auth class).
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - location
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetLocationTimeZoneRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetLocationNameResponse"
+  /google.internal.android.pixel.weatherhub.v1.WeatherBriefService/GetEssentialsWeather:
+    post:
+      summary: GetEssentialsWeather
+      description: |
+        Primary forecast brief: current + hourly/daily-like series + insights.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - forecast
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetEssentialsWeatherRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetEssentialsWeatherResponse"
+  /google.internal.android.pixel.weatherhub.v1.WeatherBriefService/GetEssentialsCurrentCondition:
+    post:
+      summary: GetEssentialsCurrentCondition
+      description: |
+        Current condition only (service method registered).
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - forecast
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetEssentialsWeatherRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetEssentialsWeatherResponse"
+  /google.internal.android.pixel.weatherhub.v1.WeatherBriefService/GetEssentialsForecast:
+    post:
+      summary: GetEssentialsForecast
+      description: |
+        Forecast series only (service method registered).
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - forecast
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetEssentialsWeatherRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetEssentialsWeatherResponse"
+  /google.internal.android.pixel.weatherhub.v1.WeatherBriefService/GetWeatherAlert:
+    post:
+      summary: GetWeatherAlert
+      description: |
+        Weather alerts (service method registered).
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - forecast
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetEssentialsWeatherRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetEssentialsWeatherResponse"
+  /google.internal.android.pixel.weatherhub.v1.WeatherBriefService/GetNowcastAndInsights:
+    post:
+      summary: GetNowcastAndInsights
+      description: |
+        Nowcast and insights (also nested in essentials response).
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - forecast
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetEssentialsWeatherRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetEssentialsWeatherResponse"
+  /google.internal.android.pixel.weatherhub.v1.WeatherBriefService/GetAirQuality:
+    post:
+      summary: GetAirQuality
+      description: |
+        Air quality index and category descriptions.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - air-quality
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetAirQualityRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetAirQualityResponse"
+  /google.internal.android.pixel.weatherhub.v1.PollenService/GetPollen:
+    post:
+      summary: GetPollen
+      description: |
+        Pollen categories, levels, species notes.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - pollen
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetPollenRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetPollenResponse"
+  /google.internal.android.pixel.weatherhub.v1.MapService/GetAirQualityMapLayers:
+    post:
+      summary: GetAirQualityMapLayers
+      description: |
+        AQI heatmap layer metadata.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - maps
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetAirQualityMapLayersRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetAirQualityMapLayersResponse"
+  /google.internal.android.pixel.weatherhub.v1.MapService/GetPrecipitationMapLayers:
+    post:
+      summary: GetPrecipitationMapLayers
+      description: |
+        Precipitation map layer tile keys.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - maps
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetPrecipitationMapLayersRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetPrecipitationMapLayersResponse"
+  /google.internal.android.pixel.weatherhub.v1.MapService/GetMapTileTemplate:
+    post:
+      summary: GetMapTileTemplate
+      description: |
+        Returns Google Maps tile template URL (mt0.google.com/vt?bpb=).
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - maps
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetMapTileTemplateRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetMapTileTemplateResponse"
+  /google.internal.android.pixel.weatherhub.v1.BlockConfigService/QueryBlockConfigAvailability:
+    post:
+      summary: QueryBlockConfigAvailability
+      description: |
+        Block availability query. Minimal body returned INVALID_ARGUMENT in probes.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - blocks
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/QueryBlockConfigAvailabilityRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetEssentialsWeatherResponse"
+  /google.internal.android.pixel.weatherhub.v1.ImageryService/ListImages:
+    post:
+      summary: ListImages
+      description: |
+        List background imagery records.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - imagery
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListImagesRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListImagesResponse"
+  /google.internal.android.pixel.weatherhub.v1.ImageryService/CreateImageRecords:
+    post:
+      summary: CreateImageRecords
+      description: |
+        Create image records (write).
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - imagery
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListImagesRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListImagesResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/ListPreferredLocations:
+    post:
+      summary: ListPreferredLocations
+      description: |
+        List preferred locations. **Requires OAuth.** API key returns grpc-status 16.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - preferences
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/CreatePreferredLocation:
+    post:
+      summary: CreatePreferredLocation
+      description: |
+        Create preferred location. OAuth required.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - preferences
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/DeletePreferredLocations:
+    post:
+      summary: DeletePreferredLocations
+      description: |
+        Delete preferred locations. OAuth required.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - preferences
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/UpdatePreferredLocations:
+    post:
+      summary: UpdatePreferredLocations
+      description: |
+        Update preferred locations. OAuth required.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - preferences
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/ListWeatherBlockConfigsOrCreateDefault:
+    post:
+      summary: ListWeatherBlockConfigsOrCreateDefault
+      description: |
+        List or create default weather block configs. OAuth required.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - blocks
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/UpdateWeatherBlockConfigs:
+    post:
+      summary: UpdateWeatherBlockConfigs
+      description: |
+        Update weather block configs. OAuth required.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - blocks
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/CreateWeatherBlockConfigs:
+    post:
+      summary: CreateWeatherBlockConfigs
+      description: |
+        Create weather block configs. OAuth required.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - blocks
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/DeleteWeatherBlockConfigs:
+    post:
+      summary: DeleteWeatherBlockConfigs
+      description: |
+        Delete weather block configs. OAuth required.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - blocks
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.UserPreferenceService/OneOffOperation:
+    post:
+      summary: OneOffOperation
+      description: |
+        One-off preference operation. OAuth required.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - preferences
+      security:
+        -
+          GoogleOAuth:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/ListPreferredLocationsRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/ListPreferredLocationsResponse"
+  /google.internal.android.pixel.weatherhub.v1.LlmService/Generate:
+    post:
+      summary: Generate
+      description: |
+        LLM generate (weather summary). May use apex hosts and extra auth; inventory only.
+        
+        **Wire format:** gRPC frame (1 byte compress flag + 4 byte BE length + protobuf). OpenAPI schemas describe logical protobuf fields.
+      tags:
+        - forecast
+      security:
+        -
+          AndroidApiKey:
+
+      parameters:
+        -
+          $ref: "#/components/parameters/AndroidPackage"
+        -
+          $ref: "#/components/parameters/AndroidCert"
+        -
+          $ref: "#/components/parameters/ClientId"
+        -
+          $ref: "#/components/parameters/GrpcContentType"
+        -
+          $ref: "#/components/parameters/Te"
+      requestBody:
+        required: true
+        content:
+          application/grpc:
+            schema:
+              $ref: "#/components/schemas/GetEssentialsWeatherRequest"
+      responses:
+        200:
+          description: HTTP 200 with gRPC trailers. Check grpc-status trailer (0 = success).
+          headers:
+            grpc-status:
+              $ref: "#/components/headers/GrpcStatus"
+            grpc-message:
+              $ref: "#/components/headers/GrpcMessage"
+          content:
+            application/grpc:
+              schema:
+                $ref: "#/components/schemas/GetEssentialsWeatherResponse"
+components:
+  securitySchemes:
+    AndroidApiKey:
+      type: apiKey
+      in: header
+      name: X-Goog-Api-Key
+      description: Public client API key from APK (phenotype 45460178). Must be paired with X-Android-Package and X-Android-Cert.
+    GoogleOAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: OAuth2
+      description: "OAuth2 access token with scope https://www.googleapis.com/auth/pixelweatherhub. Required for UserPreferenceService."
+  parameters:
+    AndroidPackage:
+      name: X-Android-Package
+      in: header
+      required: true
+      schema:
+        type: string
+        default: com.google.android.apps.weather
+    AndroidCert:
+      name: X-Android-Cert
+      in: header
+      required: true
+      schema:
+        type: string
+        default: fe96f0c14f56c8c0ce26a654576fd8829224ed49
+        description: SHA-1 of app signing cert, lowercase hex
+    ClientId:
+      name: pixel-weather-client-id
+      in: header
+      required: true
+      schema:
+        type: string
+        default: pixel-weather-mobile
+    GrpcContentType:
+      name: Content-Type
+      in: header
+      required: true
+      schema:
+        type: string
+        enum:
+          - application/grpc
+    Te:
+      name: te
+      in: header
+      required: true
+      schema:
+        type: string
+        enum:
+          - trailers
+  schemas:
+    LatLng:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: float
+          protobufField: 1
+        longitude:
+          type: number
+          format: float
+          protobufField: 2
+      description: WGS84 coordinates. Protobuf message field numbers 1/2 as floats.
+    LocationInput:
+      type: object
+      properties:
+        latLng:
+          $ref: "#/components/schemas/LatLng"
+          protobufField: 1
+        field2:
+          type: string
+          protobufField: 2
+        field3:
+          type: string
+          protobufField: 3
+        field4:
+          type: string
+          protobufField: 4
+        field5:
+          type: integer
+          protobufField: 5
+          description: enum
+        field6:
+          type: string
+          protobufField: 6
+      description: "Shared location input (decompiled class bf). Minimal working form: latLng only."
+    GetLocationTimeZoneRequest:
+      type: object
+      required:
+        - latLng
+      properties:
+        latLng:
+          $ref: "#/components/schemas/LatLng"
+          protobufField: 1
+    GetLocationTimeZoneResponse:
+      type: object
+      properties:
+        timezoneId:
+          type: string
+          protobufField: 1
+          example: America/Los_Angeles
+          description: IANA timezone id
+    GetLocationNameRequest:
+      type: object
+      required:
+        - latLng
+      properties:
+        latLng:
+          $ref: "#/components/schemas/LatLng"
+          protobufField: 1
+        accuracyMeters:
+          type: number
+          format: float
+          protobufField: 4
+        wifiAccessPoints:
+          type: array
+          items:
+            type: object
+          protobufField: 5
+    GetLocationNameResponse:
+      type: object
+      description: Nested place names, region codes, place id. See sample binary.
+      properties:
+        place:
+          type: object
+          properties:
+            displayName:
+              type: string
+              example: Mountain View
+            placeId:
+              type: string
+              example: ChIJ09H2YwK6j4ARoF7qfCBxhB8
+    GetEssentialsWeatherRequest:
+      type: object
+      required:
+        - location
+        - languageCode
+      properties:
+        location:
+          $ref: "#/components/schemas/LocationInput"
+          protobufField: 1
+        temperatureUnit:
+          type: integer
+          protobufField: 2
+          description: Temperature unit enum. Value 1 proven working.
+          example: 1
+        languageCode:
+          type: string
+          protobufField: 3
+          example: en-US
+    GetEssentialsWeatherResponse:
+      type: object
+      description: "Large protobuf (~30-40KB). Fields: repeated items(2), current(3), forecast lists(4,5), extras(6,7), timestamp(8). Contains condition phrases, hourly/daily series, insights."
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+          protobufField: 2
+        current:
+          type: object
+          protobufField: 3
+        hourlyLike:
+          type: object
+          protobufField: 4
+        dailyLike:
+          type: object
+          protobufField: 5
+        extra:
+          type: object
+          protobufField: 6
+        more:
+          type: object
+          protobufField: 7
+        timestamp:
+          type: string
+          format: date-time
+          protobufField: 8
+      example:
+        note: Binary sample in samples/responses/GetEssentialsWeather.bin
+        decodedStringsSample:
+          - "Partly sunny"
+          - America/Los_Angeles
+          - "Google Weather"
+    GetAirQualityRequest:
+      type: object
+      required:
+        - latLng
+      properties:
+        latLng:
+          $ref: "#/components/schemas/LatLng"
+          protobufField: 1
+        languageCode:
+          type: string
+          protobufField: 5
+          example: en-US
+    GetAirQualityResponse:
+      type: object
+      description: AQI value, categories, educational text.
+      properties:
+        indexName:
+          type: string
+          example: U.S. Air Quality Index
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                  - Good
+                  - Moderate
+                  - "Unhealthy for sensitive groups"
+                  - Unhealthy
+                  - "Very unhealthy"
+                  - Hazardous
+              description:
+                type: string
+    GetPollenRequest:
+      type: object
+      required:
+        - location
+      properties:
+        location:
+          $ref: "#/components/schemas/LocationInput"
+          protobufField: 1
+        field3:
+          type: integer
+          protobufField: 3
+        languageCode:
+          type: string
+          protobufField: 6
+          example: en-US
+    GetPollenResponse:
+      type: object
+      properties:
+        types:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+                enum:
+                  - Weed
+                  - Tree
+                  - Grass
+              level:
+                type: string
+              speciesNotes:
+                type: string
+    GetAirQualityMapLayersRequest:
+      type: object
+      properties:
+        location:
+          $ref: "#/components/schemas/LocationInput"
+          protobufField: 1
+        languageCode:
+          type: string
+          protobufField: 2
+    GetAirQualityMapLayersResponse:
+      type: object
+      properties:
+        layerId:
+          type: string
+          example: air-quality-heatmap
+        legend:
+          type: object
+    GetPrecipitationMapLayersRequest:
+      type: object
+      properties:
+        location:
+          $ref: "#/components/schemas/LocationInput"
+          protobufField: 1
+    GetPrecipitationMapLayersResponse:
+      type: object
+      description: Tile key paths and signed tokens for precipitation map layers.
+    GetMapTileTemplateRequest:
+      type: object
+      properties:
+        layerType:
+          type: integer
+          protobufField: 1
+          description: Enum; values 1-4 proven OK
+          example: 1
+    GetMapTileTemplateResponse:
+      type: object
+      properties:
+        templateUrl:
+          type: string
+          example: "https://mt0.google.com/vt?bpb="
+    QueryBlockConfigAvailabilityRequest:
+      type: object
+      description: Schema incomplete; minimal location-only body returned INVALID_ARGUMENT.
+    ListPreferredLocationsRequest:
+      type: object
+      description: OAuth required. Empty body probe returned UNAUTHENTICATED with API key only.
+    ListPreferredLocationsResponse:
+      type: object
+      description: List of preferred locations for signed-in user.
+    ListImagesRequest:
+      type: object
+    ListImagesResponse:
+      type: object
+    GrpcStatus:
+      type: object
+      properties:
+        grpc-status:
+          type: string
+          description: Trailer; 0 = OK
+        grpc-message:
+          type: string
+  headers:
+    GrpcStatus:
+      description: gRPC status code trailer
+      schema:
+        type: string
+        example: 0
+    GrpcMessage:
+      description: gRPC error message trailer
+      schema:
+        type: string
+security:
+  -
+    AndroidApiKey:
+

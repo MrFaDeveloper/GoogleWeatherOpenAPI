@@ -1,0 +1,894 @@
+# Google Weather Open API — llms-full.txt
+
+> Expanded agent context. Prefer llms.txt when context is tight.
+
+
+
+<!-- ========== llms.txt ========== -->
+
+# Google Weather Open API
+
+> Open reverse-engineered client for Google Pixel Weather (`com.google.android.apps.weather`) weatherhub gRPC. Call location, forecast, AQI, pollen, and maps with public Android-restricted client headers — no Google account for read APIs. Python package exposes REST-like methods and an optional local JSON REST proxy.
+
+Important notes:
+
+- Not an official Google product. Respect Google Terms of Service and rate limits.
+- Transport under the hood is gRPC over HTTP/2 to `pixelweatherhub-pa.googleapis.com`. The Python library and local REST proxy hide that; users work with JSON dicts / `GET /v1/...`.
+- Default credentials (API key + Android package + cert + client-id) are public client fields from the stock APK, not user secrets.
+- `UserPreferenceService` (saved places / block layouts) requires OAuth scope `https://www.googleapis.com/auth/pixelweatherhub`.
+
+## Docs
+
+- [README](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/README.md): project overview and first successful request
+- [Wiki home](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/wiki): full human wiki index
+- [Credentials & auth](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/docs/auth.md): exact headers, API key, cert, OAuth wall
+- [Credentials wiki](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/wiki/Credentials.md): copy-paste identity for every client
+- [Python library](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/wiki/Python-Library.md): install, WeatherClient, CLI, REST proxy
+- [REST proxy](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/wiki/REST-Proxy.md): localhost JSON endpoints
+- [Endpoints index](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/docs/endpoints/README.md): all RPCs by domain
+- [Network stack](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/wiki/Architecture.md): Cronet/gRPC/host list
+- [FINDINGS](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/wiki/Architecture.md): reverse notes and live proof
+- [OpenAPI YAML](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/openapi/openapi.yaml): gRPC-as-HTTP operations
+- [OpenAPI JSON](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/openapi/openapi.json): same surface machine-readable
+- [Postman guide EN](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/docs/postman-guide.md)
+- [Postman guide RU](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/docs/postman-guide.ru.md)
+- [Vibe coders](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/wiki/Vibe-Coders.md): paste into Cursor/Claude/Copilot
+
+## Examples
+
+- [Python quickstart](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/examples/quickstart.py): WeatherClient timezone + weather
+- [CLI usage](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/wiki/Python-Library.md): `python -m google_weather weather --lat ...`
+
+## API surface (read, API-key)
+
+- GetLocationTimeZone → IANA timezone string
+- GetLocationName → place labels + place id
+- GetEssentialsWeather → full brief (~30–40 KB protobuf)
+- GetAirQuality → U.S. AQI categories
+- GetPollen → Weed/Tree/Grass
+- GetAirQualityMapLayers → air-quality-heatmap
+- GetPrecipitationMapLayers → precip tile keys
+- GetMapTileTemplate → `https://mt0.google.com/vt?bpb=`
+
+## Default credentials (always send)
+
+- Host: `pixelweatherhub-pa.googleapis.com`
+- Header `X-Goog-Api-Key: AIzaSyCO1vbjEq1ZOZ1YKpksQY_MZuClk4acU_U`
+- Header `X-Android-Package: com.google.android.apps.weather`
+- Header `X-Android-Cert: fe96f0c14f56c8c0ce26a654576fd8829224ed49`
+- Header `pixel-weather-client-id: pixel-weather-mobile`
+
+## Postman
+
+- [Public workspace](https://www.postman.com/altimetry-operator-52698115-s-team/workspace/google-weather-open-api/7f362113-7e78-4fce-88d2-6b76d9e15aeb)
+- [English collection](https://www.postman.com/altimetry-operator-52698115-s-team/workspace/google-weather-open-api/collection/036eb99c-d4aa-4f7a-8cb8-09bc13f7c52a)
+- [Russian collection](https://www.postman.com/altimetry-operator-52698115-s-team/workspace/google-weather-open-api/collection/b10cf0db-ebb5-4d46-9faa-1f1ea395d6a6)
+
+## Optional
+
+- [llms-full.txt](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/llms-full.txt): expanded context for agents
+- [llms-ctx style notes](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/wiki/Vibe-Coders.md): how to load into IDEs
+- [APK identity](https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI/blob/main/artifacts/metadata/identity.json): versionCode 10009163 hashes
+
+
+<!-- ========== wiki/Home.md ========== -->
+
+# Google Weather Open API — Wiki
+
+**Unofficial open client** for the network backend used by **Google Pixel Weather**.
+
+| Item | Value |
+|------|--------|
+| GitHub | https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI |
+| Package | `google-weather-open-api` (Python) |
+| Backend host | `pixelweatherhub-pa.googleapis.com` |
+| App reverse | `com.google.android.apps.weather` **1.1.20260413.940319463.release** (vc **10009163**) |
+| Official? | **No.** Community reverse for interoperability / research. |
+
+---
+
+## Start here
+
+1. **[Credentials](Credentials.md)** — API key, Android package, cert, client-id (copy-paste)
+2. **[Quick start](Quick-Start.md)** — first successful call in 30 seconds
+3. **[Python library](Python-Library.md)** — `WeatherClient`, CLI, install
+4. **[REST proxy](REST-Proxy.md)** — local `GET /v1/weather?...` JSON API
+5. **[Endpoints](Endpoints.md)** — every RPC explained
+6. **[Auth walls](Auth-Walls.md)** — what needs Google OAuth
+7. **[Postman](Postman.md)** — public EN + RU collections
+8. **[Architecture](Architecture.md)** — gRPC stack, call graph
+9. **[Vibe coders](Vibe-Coders.md)** — Cursor / Claude / Copilot + `llms.txt`
+10. **[Troubleshooting](Troubleshooting.md)**
+
+---
+
+## What “open API” means here
+
+Google does **not** publish a public REST product for Pixel Weather. The stock app speaks **gRPC** to an internal package:
+
+```text
+google.internal.android.pixel.weatherhub.v1.*
+```
+
+This project:
+
+1. Documents that surface honestly.
+2. Ships **default public client headers** the APK already contains.
+3. Gives you a **Python API that looks like REST** (methods return JSON dicts).
+4. Optionally runs a **local REST HTTP server** so Postman/curl use JSON, not raw gRPC.
+
+You still hit Google’s production host. You do not get an unrestricted free-for-all key without the Android app restriction headers.
+
+---
+
+## Capability matrix
+
+| Feature | Works with default headers? | Notes |
+|---------|----------------------------|--------|
+| Timezone | Yes | Proven |
+| Location name | Yes | Proven |
+| Essentials weather | Yes | ~37 KB response |
+| Air quality | Yes | Proven |
+| Pollen | Yes | Proven |
+| AQI / precip map layers | Yes | Proven |
+| Map tile template | Yes | layer enum 1–4 |
+| Saved locations / block sync | **No** | OAuth required (`grpc-status 16`) |
+
+---
+
+## Languages
+
+| Resource | Language |
+|----------|----------|
+| README, wiki, OpenAPI | English (primary) |
+| Postman RU collection | Russian descriptions |
+| Postman EN collection | English descriptions |
+| Chat process notes | may be RU; committed docs EN |
+
+---
+
+## License / ToS
+
+Use at your own risk. Do not abuse Google services. Do not claim affiliation with Google.
+
+
+<!-- ========== wiki/Credentials.md ========== -->
+
+# Credentials — what every request must send
+
+These values are **public client fields** reverse-engineered from Pixel Weather  
+version `1.1.20260413.940319463.release`. They are **not** personal user secrets.
+
+Print them anytime:
+
+```bash
+python -m google_weather credentials
+# or after pip install -e .
+google-weather credentials
+```
+
+REST proxy:
+
+```bash
+curl http://127.0.0.1:8787/v1/credentials
+```
+
+---
+
+## Ready-to-copy headers
+
+```http
+X-Goog-Api-Key: AIzaSyCO1vbjEq1ZOZ1YKpksQY_MZuClk4acU_U
+X-Android-Package: com.google.android.apps.weather
+X-Android-Cert: fe96f0c14f56c8c0ce26a654576fd8829224ed49
+pixel-weather-client-id: pixel-weather-mobile
+Content-Type: application/grpc
+te: trailers
+```
+
+| Header | Value | Source in app |
+|--------|--------|----------------|
+| `X-Goog-Api-Key` | `AIzaSyCO1vbjEq1ZOZ1YKpksQY_MZuClk4acU_U` | Phenotype flag `45460178` / DI `ApiKeyStrategy` |
+| `X-Android-Package` | `com.google.android.apps.weather` | `context.getPackageName()` |
+| `X-Android-Cert` | `fe96f0c14f56c8c0ce26a654576fd8829224ed49` | SHA-1 of signing cert (hex lowercase) |
+| `pixel-weather-client-id` | `pixel-weather-mobile` | Hard-coded interceptor |
+
+### Host
+
+```text
+pixelweatherhub-pa.googleapis.com
+```
+
+---
+
+## Why package + cert are mandatory
+
+Without them Google returns:
+
+```text
+grpc-status: 7
+grpc-message: Requests from this Android client application <empty> are blocked.
+```
+
+Error reason: `API_KEY_ANDROID_APP_BLOCKED` for service `pixelweatherhub-pa.googleapis.com`.
+
+The key is **Android app restricted**. Desktop clients work only when they **impersonate** the stock app identity via these two headers.
+
+### How cert was obtained
+
+```bash
+apksigner verify --print-certs artifacts/apk/base.apk
+# certificate SHA-1 digest → remove colons, lowercase
+```
+
+---
+
+## What is NOT required for weather data
+
+| Credential | Needed for weather? |
+|------------|---------------------|
+| Google account password | No |
+| OAuth access token | **No** for forecast/location/AQI/pollen/maps |
+| Zwieback cookie | No (observed optional analytics) |
+| Device attestation beyond cert headers | Not required in our live probes |
+
+---
+
+## OAuth (only preferences)
+
+Scope:
+
+```text
+https://www.googleapis.com/auth/pixelweatherhub
+```
+
+Header:
+
+```http
+Authorization: Bearer <your_token>
+```
+
+Without it, `UserPreferenceService/*` returns `grpc-status: 16`.
+
+This project **does not ship user tokens**. Put your own token only if you obtained it legally for your account.
+
+---
+
+## Other keys found in APK (not primary weatherhub)
+
+| Key / flag | Role |
+|------------|------|
+| `AIzaSyBL_7VqwthaBp5TRtRMDgQDQ4kpH4wDkQQ` (45730423) | Apex / LLM related host |
+| `AIzaSyDgmW4ZMvNblSXqMOgsbY8uRrTnfR3E7pY` | mapsmobilesdks default |
+| `AIzaSyCO1vbj…` (45460178) | **weatherhub** (this project) |
+
+Use **CO1vbj** for weatherhub unless you are exploring Apex separately.
+
+---
+
+## Postman environment
+
+Environment name: **Google Weather Open API**
+
+| Variable | Default |
+|----------|---------|
+| `api_key` | `AIzaSyCO1vbjEq1ZOZ1YKpksQY_MZuClk4acU_U` |
+| `android_package` | `com.google.android.apps.weather` |
+| `android_cert` | `fe96f0c14f56c8c0ce26a654576fd8829224ed49` |
+| `client_id` | `pixel-weather-mobile` |
+| `host` | `pixelweatherhub-pa.googleapis.com` |
+| `lat` / `lng` | `37.422` / `-122.084` |
+| `lang` | `en-US` |
+| `oauth_token` | empty |
+
+These are pre-filled in the public Postman workspace.
+
+
+<!-- ========== wiki/Quick-Start.md ========== -->
+
+# Quick start
+
+## 1) Clone & install
+
+```bash
+git clone https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI.git
+cd GoogleWeatherOpenAPI
+python3 -m pip install -e .
+```
+
+Requires: Python 3.9+, `curl` with HTTP/2 support (macOS/Homebrew curl is fine).
+
+## 2) Show credentials
+
+```bash
+python -m google_weather credentials
+```
+
+You should see the API key, package, cert, and client-id.
+
+## 3) First RPC (timezone)
+
+```bash
+python -m google_weather timezone --lat 37.422 --lng -122.084 --json
+```
+
+Expected:
+
+```json
+{
+  "ok": true,
+  "grpc_status": 0,
+  "data": { "timezone": "America/Los_Angeles" }
+}
+```
+
+## 4) Weather brief
+
+```bash
+python -m google_weather weather --lat 37.422 --lng -122.084 --lang en-US --json
+```
+
+`summary_strings` will include condition phrases like `Sunny`, `Partly sunny`, etc.
+
+## 5) Local REST (optional)
+
+```bash
+python -m google_weather serve --port 8787
+# other terminal:
+curl -s 'http://127.0.0.1:8787/v1/location/timezone?lat=37.422&lng=-122.084' | jq .
+curl -s 'http://127.0.0.1:8787/v1/weather?lat=37.422&lng=-122.084&lang=en-US' | jq .
+curl -s 'http://127.0.0.1:8787/v1/credentials' | jq .
+```
+
+## 6) Postman
+
+Open the [public workspace](https://www.postman.com/altimetry-operator-52698115-s-team/workspace/google-weather-open-api/7f362113-7e78-4fce-88d2-6b76d9e15aeb), select environment **Google Weather Open API**, run **Location → GetLocationTimeZone**.
+
+Or use the REST proxy + Postman against `http://127.0.0.1:8787` for pure JSON (easier than raw gRPC in the GUI).
+
+
+<!-- ========== wiki/Python-Library.md ========== -->
+
+# Python library
+
+Package name: **`google-weather-open-api`**  
+Import name: **`google_weather`**
+
+## Install
+
+```bash
+cd GoogleWeatherOpenAPI
+python3 -m pip install -e .
+```
+
+Zero third-party runtime dependencies. Transport uses system `curl --http2`.
+
+## WeatherClient (recommended)
+
+```python
+from google_weather import WeatherClient
+
+client = WeatherClient()
+
+# JSON-friendly dicts — no gRPC knowledge needed
+tz = client.get_timezone(37.422, -122.084)
+print(tz["data"]["timezone"])  # America/Los_Angeles
+
+name = client.get_location_name(37.422, -122.084)
+print(name["data"]["display_name"], name["data"].get("place_id"))
+
+weather = client.get_weather(37.422, -122.084, lang="en-US")
+print(weather["ok"], weather["data"]["conditions_mentioned"][:5])
+print(weather["summary_strings"][:15])
+
+aqi = client.get_air_quality(37.422, -122.084)
+pollen = client.get_pollen(37.422, -122.084)
+maps = client.get_air_quality_map(37.422, -122.084)
+tile = client.get_map_tile_template(layer=1)
+
+# Show what headers will be sent
+print(client.credentials_info())
+```
+
+### Method ↔ REST analogy
+
+| Client method | Logical REST |
+|---------------|--------------|
+| `get_timezone` | `GET /v1/location/timezone` |
+| `get_location_name` | `GET /v1/location/name` |
+| `get_weather` | `GET /v1/weather` |
+| `get_air_quality` | `GET /v1/air-quality` |
+| `get_pollen` | `GET /v1/pollen` |
+| `get_air_quality_map` | `GET /v1/maps/air-quality` |
+| `get_precipitation_map` | `GET /v1/maps/precipitation` |
+| `get_map_tile_template` | `GET /v1/maps/tile-template` |
+| `list_preferred_locations` | `GET /v1/preferences/locations` (OAuth) |
+
+### Response envelope
+
+Every method returns:
+
+```json
+{
+  "ok": true,
+  "grpc_status": 0,
+  "grpc_message": "",
+  "method": "get_weather",
+  "path": "/google.internal.../GetEssentialsWeather",
+  "data": { "...parsed fields..." },
+  "summary_strings": ["Sunny", "America/Los_Angeles", "..."],
+  "raw_message_b64": null,
+  "http": "HTTP/2 200"
+}
+```
+
+Protobuf wire format is decoded best-effort into `data` + human strings. Full binary available with `WeatherClient(include_raw=True)`.
+
+### Custom credentials
+
+```python
+from google_weather import WeatherClient, Credentials
+
+c = WeatherClient(Credentials(
+    api_key="AIzaSyCO1vbjEq1ZOZ1YKpksQY_MZuClk4acU_U",
+    android_package="com.google.android.apps.weather",
+    android_cert="fe96f0c14f56c8c0ce26a654576fd8829224ed49",
+    client_id="pixel-weather-mobile",
+    oauth_token=None,  # set only for preferences
+))
+```
+
+## CLI
+
+```bash
+python -m google_weather credentials
+python -m google_weather timezone --lat 55.75 --lng 37.62 --json
+python -m google_weather weather --lat 37.422 --lng -122.084 --lang ru-RU --json
+python -m google_weather aqi --lat 37.422 --lng -122.084 --json
+python -m google_weather pollen --lat 37.422 --lng -122.084 --json
+python -m google_weather map-tile --layer 1 --json
+python -m google_weather serve --port 8787
+```
+
+Entry point after install: `google-weather` (same args).
+
+## Layout in repo
+
+```text
+src/google_weather/
+  client.py           # WeatherClient
+  credentials.py      # DEFAULT_* and Credentials
+  protobuf_codec.py   # encode/decode without protoc
+  transport.py        # curl HTTP/2 gRPC
+  rest_server.py      # local JSON REST
+  cli.py
+```
+
+## Why not grpcio?
+
+Shipping a zero-dep client that works with stock macOS `curl` is simpler for reverse-docs consumers. You can still use raw gRPC if you prefer; OpenAPI documents the wire paths.
+
+
+<!-- ========== wiki/REST-Proxy.md ========== -->
+
+# Local REST proxy
+
+Makes the API feel like a normal REST service. Under the hood it still calls Google weatherhub gRPC with the stock client headers.
+
+## Start
+
+```bash
+python -m pip install -e .
+python -m google_weather serve --bind 127.0.0.1 --port 8787
+```
+
+## Endpoints
+
+| Method | Path | Query |
+|--------|------|-------|
+| GET | `/health` | — |
+| GET | `/v1/credentials` | — |
+| GET | `/v1/location/timezone` | `lat`, `lng` |
+| GET | `/v1/location/name` | `lat`, `lng` |
+| GET | `/v1/weather` | `lat`, `lng`, `lang?`, `unit?` |
+| GET | `/v1/air-quality` | `lat`, `lng`, `lang?` |
+| GET | `/v1/pollen` | `lat`, `lng`, `lang?` |
+| GET | `/v1/maps/air-quality` | `lat`, `lng`, `lang?` |
+| GET | `/v1/maps/precipitation` | `lat`, `lng` |
+| GET | `/v1/maps/tile-template` | `layer?` |
+| GET | `/v1/preferences/locations` | — (OAuth wall) |
+
+## Examples
+
+```bash
+curl -s 'http://127.0.0.1:8787/v1/credentials' | jq .
+
+curl -s 'http://127.0.0.1:8787/v1/location/timezone?lat=37.422&lng=-122.084' | jq .
+
+curl -s 'http://127.0.0.1:8787/v1/weather?lat=37.422&lng=-122.084&lang=en-US' | jq '.data.conditions_mentioned'
+
+curl -s 'http://127.0.0.1:8787/v1/air-quality?lat=37.422&lng=-122.084' | jq .
+
+curl -s 'http://127.0.0.1:8787/v1/pollen?lat=55.75&lng=37.62&lang=ru-RU' | jq .
+```
+
+## Postman against localhost
+
+Create a new Postman request:
+
+- Method: GET  
+- URL: `http://127.0.0.1:8787/v1/weather?lat={{lat}}&lng={{lng}}&lang={{lang}}`  
+- No gRPC headers needed — the proxy adds them server-side.
+
+This is the easiest path for teams who refuse binary gRPC in the GUI.
+
+## CORS
+
+The proxy sends `Access-Control-Allow-Origin: *` for simple browser demos. Do not expose it unauthenticated on a public network — it will burn Google quota with your shared client key.
+
+
+<!-- ========== wiki/Endpoints.md ========== -->
+
+# Endpoints reference
+
+Host: **`pixelweatherhub-pa.googleapis.com`**  
+Wire: gRPC unary, `Content-Type: application/grpc`  
+Library: use `WeatherClient` / REST proxy instead of hand-rolling frames.
+
+Package prefix:
+
+```text
+google.internal.android.pixel.weatherhub.v1
+```
+
+---
+
+## LocationMetadataService
+
+### GetLocationTimeZone
+
+- Path: `/...LocationMetadataService/GetLocationTimeZone`
+- Auth: API key headers
+- Request: `LatLng` field 1
+- Response: string timezone field 1
+- Python: `client.get_timezone(lat, lng)`
+- REST: `GET /v1/location/timezone?lat=&lng=`
+- Sample: Mountain View → `America/Los_Angeles`
+
+### GetLocationName
+
+- Request: `LatLng` field 1 (+ optional accuracy / Wi-Fi)
+- Response: nested place names + place id (`ChIJ…`)
+- Python: `client.get_location_name(lat, lng)`
+- REST: `GET /v1/location/name?lat=&lng=`
+
+### GetGeoAttributes
+
+Registered on service; same auth class. See decompiled stubs for full fields.
+
+---
+
+## WeatherBriefService
+
+### GetEssentialsWeather ⭐ primary
+
+- Request: LocationInput (1), temperature unit enum (2), language (3)
+- Response: large message — current + forecast series + insights
+- Python: `client.get_weather(lat, lng, lang="en-US", unit=1)`
+- REST: `GET /v1/weather?lat=&lng=&lang=&unit=`
+
+Also registered: `GetEssentialsCurrentCondition`, `GetEssentialsForecast`, `GetWeatherAlert`, `GetNowcastAndInsights` — essentials covers UI home path.
+
+### GetAirQuality
+
+- Request: LatLng (1), language (5)
+- Python: `client.get_air_quality`
+- REST: `GET /v1/air-quality`
+
+---
+
+## PollenService
+
+### GetPollen
+
+- Request: LocationInput (1), language (6)
+- Python: `client.get_pollen`
+- REST: `GET /v1/pollen`
+
+---
+
+## MapService
+
+### GetAirQualityMapLayers
+
+- LocationInput + language
+- Layer id often `air-quality-heatmap`
+
+### GetPrecipitationMapLayers
+
+- LocationInput
+- Large tile key payload
+
+### GetMapTileTemplate
+
+- Enum layer type field 1 (values **1–4** OK)
+- Returns `https://mt0.google.com/vt?bpb=`
+
+---
+
+## BlockConfigService / ImageryService / LlmService
+
+Inventoried in OpenAPI and analysis notes. Prefer live samples in `samples/responses/` where present.
+
+---
+
+## UserPreferenceService (OAuth)
+
+Create/List/Update/Delete preferred locations and weather block configs.
+
+Without `Authorization: Bearer …`:
+
+```text
+grpc-status: 16
+API keys are not supported by this API.
+```
+
+---
+
+## OpenAPI
+
+Machine-readable list of all operations:
+
+- [`openapi/openapi.yaml`](../openapi/openapi.yaml)
+- [`openapi/openapi.json`](../openapi/openapi.json)
+
+
+<!-- ========== wiki/Auth-Walls.md ========== -->
+
+# Auth walls
+
+## Level 0 — nothing
+
+Does not work. Host requires the Android-restricted API key headers.
+
+## Level 1 — public client headers (default)
+
+Works for:
+
+- LocationMetadataService (timezone, name, …)
+- WeatherBriefService (essentials, AQI, …)
+- PollenService
+- MapService read methods
+- (API-key-allowed) BlockConfig / Imagery methods when body is valid
+
+Headers: see [Credentials](Credentials.md).
+
+## Level 2 — Google OAuth
+
+Required for UserPreferenceService:
+
+```text
+scope: https://www.googleapis.com/auth/pixelweatherhub
+header: Authorization: Bearer <token>
+```
+
+How the stock app gets it: signed-in Google account via GMS / TikTok account module (`AuthContext` type `google`). Pseudonymous mode cannot sync preferred locations.
+
+This reverse does **not** provide a third-party OAuth client id for that scope.
+
+## Level 3 — Apex / LLM
+
+Separate hosts (`apex-apis-pa`, `pixelapex-pa`) and key flag `45730423`. Not part of the least-auth weather contract.
+
+
+<!-- ========== wiki/Architecture.md ========== -->
+
+# Architecture
+
+## Stock app call path
+
+```text
+HomeActivity / WeatherBlocksFragment
+  → EssentialsWeatherCacheAccessor
+  → builds GetEssentialsWeatherRequest (LatLng + language)
+  → WeatherBriefService gRPC stub
+  → Google frameworks client + Cronet HTTP/2
+  → pixelweatherhub-pa.googleapis.com
+  → SqliteKeyValueCache (account or NoAccount*)
+```
+
+## This library
+
+```text
+Your code / curl / Postman
+  → WeatherClient  or  REST proxy :8787
+  → protobuf_codec (build request)
+  → transport (curl --http2 application/grpc)
+  → Google weatherhub
+  → parse protobuf → JSON dict
+```
+
+## Why gRPC is hidden
+
+Most consumers want:
+
+```python
+client.get_weather(lat, lng)
+```
+
+or
+
+```http
+GET /v1/weather?lat=...&lng=...
+```
+
+not length-prefixed protobuf frames. The library performs framing/unframing internally.
+
+## Hosts
+
+| Host | Role |
+|------|------|
+| `pixelweatherhub-pa.googleapis.com` | Production weatherhub |
+| `pixelweatherhub-pa.mtls.googleapis.com` | mTLS variant |
+| `staging-pixelweatherhub-pa.sandbox.googleapis.com` | Staging |
+| `www.gstatic.com/pixel-weather/icons/*` | Icons CDN |
+| `mt0.google.com` | Map tiles from template |
+
+See also endpoint docs and Credentials wiki.
+
+
+<!-- ========== wiki/Vibe-Coders.md ========== -->
+
+# For vibe coders (Cursor, Claude, Copilot, Windsurf, …)
+
+## Goal
+
+Make an LLM **actually** write working weather code against this reverse, without inventing fake API keys or REST paths that do not exist.
+
+## Feed the agent these files (in order)
+
+1. **[`/llms.txt`](../llms.txt)** — curated map (start here every time)
+2. **[`/llms-full.txt`](../llms-full.txt)** — expanded single-file context when the model has room
+3. **[`wiki/Credentials.md`](Credentials.md)** — exact headers
+4. **[`wiki/Python-Library.md`](Python-Library.md)** — how to call the client
+5. **[`examples/quickstart.py`](../examples/quickstart.py)** — copy-paste
+
+### Cursor / VS Code
+
+- Add the repo root to the workspace.
+- In chat: `@llms.txt @wiki/Credentials.md write a script that prints weather for Moscow`
+- Or paste `llms-full.txt` into the system prompt for a one-shot agent.
+
+### Claude Projects / Custom GPTs
+
+Upload:
+
+- `llms.txt`
+- `llms-full.txt`
+- `wiki/Credentials.md`
+- `src/google_weather/client.py`
+
+Instructions snippet:
+
+```text
+Use Google Weather Open API from this project only.
+Default credentials are in Credentials.md — do not invent other API keys.
+Prefer WeatherClient or the local REST proxy. Do not invent JSON REST on
+pixelweatherhub-pa.googleapis.com; that host is gRPC-only.
+```
+
+### Copilot Chat
+
+```text
+#file:llms.txt #file:wiki/Python-Library.md
+Implement get_weather for lat/lng using google_weather.WeatherClient
+```
+
+## What models get wrong (pre-bunk)
+
+| Hallucination | Reality |
+|---------------|---------|
+| `https://pixelweatherhub-pa.googleapis.com/v1/weather` JSON | **No** public JSON REST on that host |
+| Random `AIza…` key | Use **only** the documented CO1vbj key + package/cert |
+| “Need Google login for forecast” | **False** for essentials/AQI/pollen/maps |
+| “Just use OpenWeatherMap” | Different product; this repo is Pixel weatherhub |
+
+## Minimal prompt that works
+
+```text
+Repo: https://github.com/MrFaDeveloper/GoogleWeatherOpenAPI
+Read llms.txt and wiki/Credentials.md.
+Write Python that installs the package from the repo and prints timezone +
+weather summary_strings for lat=55.75 lng=37.62 lang=ru-RU using WeatherClient.
+Do not invent credentials.
+```
+
+## llms.txt standard
+
+This repo follows Jeremy Howard’s [/llms.txt](https://llmstxt.org/) proposal:
+
+- H1 project name
+- Blockquote summary
+- H2 sections with link lists
+- Optional section for secondary material
+
+`llms-full.txt` is an expanded context file for agents (similar role to `llms-ctx-full.txt` in FastHTML docs).
+
+## Directory listing
+
+You may register the public GitHub raw URL of `llms.txt` in community directories such as llmstxt.site if you wish — not required.
+
+
+<!-- ========== docs/auth.md ========== -->
+
+# Authentication
+
+## What you need for weather data (proven)
+
+For LocationMetadata, WeatherBrief (essentials + AQI), Pollen, and MapService read RPCs, the stock client does **not** send a Google user OAuth token. It sends a **restricted Android API key** plus package identity headers.
+
+| Header | Value | How to obtain |
+|--------|-------|----------------|
+| `X-Goog-Api-Key` | `AIzaSyCO1vbjEq1ZOZ1YKpksQY_MZuClk4acU_U` | Shipped in the APK as the default for phenotype flag `45460178` under package `com.google.android.apps.weather`. This is a public client field, not a user secret. |
+| `X-Android-Package` | `com.google.android.apps.weather` | Fixed package name. |
+| `X-Android-Cert` | `fe96f0c14f56c8c0ce26a654576fd8829224ed49` | SHA-1 fingerprint of the app signing certificate (lowercase hex, no colons). From this build: `apksigner verify --print-certs artifacts/apk/base.apk`. On a device: dump the package signature and SHA-1 digest of the cert DER. |
+| `pixel-weather-client-id` | `pixel-weather-mobile` | Hard-coded in app (`api.server.b.B()`). |
+
+### Recompute cert on a normal device
+
+```bash
+# From host, using the APK you pulled or installed
+apksigner verify --print-certs path/to/base.apk
+# Use "certificate SHA-1 digest" (lowercase, no separators)
+```
+
+Or with keytool after extracting the cert from the APK signature block.
+
+### What fails without package/cert
+
+```
+grpc-status: 7
+grpc-message: Requests from this Android client application <empty> are blocked.
+```
+
+Google Cloud error reason: `API_KEY_ANDROID_APP_BLOCKED` for service `pixelweatherhub-pa.googleapis.com`.
+
+## What requires a Google session
+
+### UserPreferenceService
+
+Live call with the same API key headers:
+
+```
+grpc-status: 16
+grpc-message: API keys are not supported by this API. Expected OAuth2 access token ...
+```
+
+Required:
+
+```
+Authorization: Bearer <oauth2_access_token>
+```
+
+- Scope: `https://www.googleapis.com/auth/pixelweatherhub`
+- Source in app: GMS / TikTok account stack when the user has a Google account selected (not `pseudonymous`).
+- How to take it from a normal device (for your own account only):
+  1. Sign into Pixel Weather with a Google account.
+  2. Capture traffic with a debug proxy that can decrypt the weather process (requires a debug/userdebug build or instrumented SSL unpin — **not** provided here).
+  3. Or use official Google OAuth for a first-party app identity — **not available** to third parties as a public OAuth client for this scope.
+
+This reverse does **not** invent or ship user tokens. OpenAPI marks preference endpoints as `oauth2` security; Postman leaves `oauth_token` empty.
+
+### LlmService / Apex
+
+Uses separate hosts and key flag `45730423` (`AIzaSyBL_...`) and may require additional session context. Not part of the proven least-auth weather contract.
+
+## Pseudonymous / no-account mode
+
+The app supports `pseudonymous` and `NoAccountEssentialsWeatherCache`. Forecast still hits weatherhub with the same API key strategy. Preferred-location sync is disabled without a Google account.
+
+## Do not
+
+- Paste third-party OAuth tokens into committed environments.
+- Assume the API key works without Android package + cert headers.
+- Treat the API key as a secret to hide from docs: it is already in every install of the app. Respect Google ToS and rate limits.

@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+*.log
+.idea/
+.vscode/
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+src/google_weather.egg-info/
+src/*.egg-info/
+*.egg-info/

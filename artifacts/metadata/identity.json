@@ -1,0 +1,32 @@
+{
+  "package": "com.google.android.apps.weather",
+  "versionName": "1.1.20260413.940319463.release",
+  "versionCode": 10009163,
+  "minSdk": 35,
+  "targetSdk": 37,
+  "platformBuild": "CinnamonBun / compileSdk 37",
+  "artifacts": [
+    {
+      "file": "artifacts/apk/base.apk",
+      "role": "base",
+      "bytes": 41946767,
+      "sha256": "27e5b939230f829f62860a8246cea4aed217bf245884ac892d15731f9b46d90f",
+      "sha1": "252d21b18c11968f6675fecd4a82451a256c7fd2"
+    },
+    {
+      "file": "artifacts/apk/split_config.arm64_v8a.apk",
+      "role": "split_config.arm64_v8a",
+      "bytes": 41198,
+      "sha256": "75d468cab73b0888bafa08b855a9cf3895a9c9d61a0de194daebbe47282eb638",
+      "sha1": "18005698bf259d9746bb10314084fb5e31cf43a5"
+    },
+    {
+      "file": "artifacts/apk/split_config.xxhdpi.apk",
+      "role": "split_config.xxhdpi",
+      "bytes": 60234,
+      "sha256": "f7e62c1faa36e75d5fa2803a1c9c15e26e2cde15c407b90ca5dc100dd5643191",
+      "sha1": "99d589044de9dac297bed27024c61f6e5bef642f"
+    }
+  ],
+  "source_note": "Pulled from a developer-owned rooted Android device via adb; device serial and install path intentionally omitted."
+}
